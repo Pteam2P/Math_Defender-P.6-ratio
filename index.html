@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Defender: ภารกิจอัตราส่วนและร้อยละ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS ธีม Sci-Fi & Glassmorphism ตามกรอบ Pedagogy */
+        body { 
+            margin: 0; 
+            font-family: 'Sarabun', sans-serif; 
+            background: #0b0c10; 
+            color: white; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            overflow: hidden; 
+        }
+        #game-container { 
+            width: 1280px; 
+            height: 720px; 
+            position: relative; 
+            /* กำหนดรูปพื้นหลัง default ไว้กรณีไม่ได้ใส่รูปในโฟลเดอร์ */
+            background: radial-gradient(circle, #1a1a2e 0%, #16213e 100%); 
+            box-shadow: 0 0 20px rgba(0,210,255,0.5); 
+            border-radius: 10px; 
+            overflow: hidden; 
+        }
+        /* แถบโลโก้มุมขวาบน (Logo Placement) */
+        .logo-bar {
+            position: absolute; 
+            top: 0; 
+            right: 0; 
+            background: #ffffff; 
+            border-radius: 0 0 0 30px; 
+            padding: 10px 30px; 
+            display: flex; 
+            gap: 15px; 
+            z-index: 510;
+            box-shadow: -5px 5px 15px rgba(0,0,0,0.3);
+        }
+        .logo-text { color: #333; font-weight: bold; font-size: 1.1em; }
+        
+        /* สไตล์ Glassmorphism */
+        .glass-panel { 
+            background: rgba(10, 20, 40, 0.85); 
+            backdrop-filter: blur(5px); 
+            border: 1px solid rgba(0, 210, 255, 0.3); 
+            border-radius: 15px; 
+            padding: 20px; 
+        }
+        
+        /* ปุ่มเรืองแสง (Glowing Buttons) */
+        .btn-glow { 
+            padding: 12px 30px; 
+            font-size: 1.2em; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            margin: 10px; 
+            font-family: 'Sarabun', sans-serif; 
+            font-weight: bold; 
+        }
+        .primary { background: #00d2ff; color: #000; box-shadow: 0 0 10px rgba(0,210,255,0.8); }
+        .primary:hover { background: #00e5ff; box-shadow: 0 0 20px #00d2ff; transform: translateY(-3px); }
+        .secondary { background: #ff9900; color: #000; box-shadow: 0 0 10px rgba(255,153,0,0.8); }
+        .secondary:hover { background: #ffaa00; box-shadow: 0 0 20px #ff9900; transform: translateY(-3px); }
+        
+        /* ปุ่มตัวเลือกคำตอบ */
+        .btn-choice { 
+            background: rgba(20, 30, 50, 0.8); 
+            color: white; 
+            border: 1px solid #00d2ff; 
+            border-radius: 8px; 
+            padding: 15px; 
+            font-size: 1.1em; 
+            cursor: pointer; 
+            transition: 0.2s; 
+            font-family: 'Sarabun', sans-serif; 
+            text-align: left;
+        }
+        .btn-choice:hover { 
+            background: rgba(0, 210, 255, 0.2); 
+            box-shadow: 0 0 10px rgba(0,210,255,0.5); 
+            transform: scale(1.02); 
+        }
+        
+        .screen { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .hidden { display: none !important; }
+        
+        /* Animations */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .floating { animation: float 3s ease-in-out infinite; }
+        
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            50% { transform: translateX(10px); }
+            75% { transform: translateX(-10px); }
+            100% { transform: translateX(0); }
+        }
+        .shake-effect { animation: shake 0.4s; }
+        
+        /* UI ข้อมูลผู้เล่น */
+        .status-bar {
+            display: flex; 
+            justify-content: space-between; 
+            padding: 15px 30px; 
+            background: rgba(0,0,0,0.6); 
+            border-bottom: 2px solid #00d2ff;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    
+    <!-- 1. MAIN MENU (Symmetrical Balance & Branding) -->
+    <div id="screen-menu" class="screen">
+        <div class="logo-bar">
+            <!-- จุดวางโลโก้องค์กร/โรงเรียน -->
+            <span class="logo-text">🚀 CONNEXT ED | LOGO</span>
+        </div>
+        
+        <div class="glass-panel" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); text-align:center; width: 600px; z-index: 500;">
+            <h1 style="font-size: 3.5em; text-shadow: 0 0 15px #00d2ff; color:#00d2ff; letter-spacing: 3px; margin-bottom: 10px;">MATH DEFENDER</h1>
+            <p style="font-size: 1.5em; margin-bottom: 30px;">ภารกิจ: อัตราส่วนและร้อยละ (ป.6)</p>
+            <button class="btn-glow primary" onclick="showLogin()">เริ่มภารกิจใหม่</button>
+            <br>
+            <button class="btn-glow secondary" onclick="showHOF()" style="margin-top: 15px;">หอเกียรติยศ</button>
+        </div>
+    </div>
+
+    <!-- 2. LOGIN (Onboarding) -->
+    <div id="screen-login" class="screen hidden">
+        <div class="glass-panel" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); text-align:center; width: 500px;">
+            <h2 style="color: #00d2ff;">ยืนยันตัวตนผู้พิทักษ์</h2>
+            <p>กรุณากรอกชื่อเพื่อบันทึกสถิติลงหอเกียรติยศ</p>
+            <input type="text" id="playerName" placeholder="กรอกชื่อของคุณ..." style="padding:15px; font-size:1.2em; width:80%; margin-bottom:20px; border-radius:8px; border:1px solid #00d2ff; background: rgba(0,0,0,0.5); color: white; text-align: center;">
+            <br>
+            <button class="btn-glow secondary" onclick="goHome()">กลับ</button>
+            <button class="btn-glow primary" onclick="startGame()">ยืนยัน</button>
+        </div>
+    </div>
+
+    <!-- 3. GAMEPLAY (Flow Theory & Cognitive Load) -->
+    <div id="screen-game" class="screen hidden">
+        <div class="status-bar">
+            <div>ด่าน: <span id="ui-stage" style="color:#00d2ff;">1/10</span></div>
+            <div>คอมโบ: <span id="ui-combo" style="color:#ff9900;">0</span></div>
+            <div>ฉายา: <span id="ui-title" style="color:#ffd700;">นักคณิตฝึกหัด</span></div>
+        </div>
+
+        <div style="position:relative; height: 350px;">
+            <!-- ตัวละคร (Floating Effect) -->
+            <div id="hero" class="floating" style="position:absolute; left: 150px; bottom: 20px; width:150px; height:200px; background:rgba(0,255,100,0.2); border: 2px dashed #0f0; border-radius: 10px; text-align:center; line-height:200px;">
+                นำรูป hero มาใส่ที่นี่<br>(images/hero/hero_1.png)
+            </div>
+            <div id="boss" class="floating" style="position:absolute; right: 150px; bottom: 20px; width:180px; height:220px; background:rgba(255,50,50,0.2); border: 2px dashed #f00; border-radius: 10px; text-align:center; line-height:220px; animation-delay: 1s;">
+                นำรูป boss มาใส่ที่นี่<br>(images/boss/boss_1.png)
+            </div>
+            
+            <!-- หลอดเลือด (HP) -->
+            <div style="position:absolute; left: 120px; top: 30px; width: 250px;">
+                <div style="margin-bottom: 5px; font-weight: bold;" id="display-player-name">ผู้พิทักษ์</div>
+                <div style="background:#333; height:20px; width:100%; border-radius:10px; overflow:hidden; border: 2px solid #555;">
+                    <div id="hp-hero" style="background: linear-gradient(90deg, #00b09b, #96c93d); height:100%; width:100%; transition: width 0.3s;"></div>
+                </div>
+            </div>
+            <div style="position:absolute; right: 120px; top: 30px; width: 250px; text-align:right;">
+                <div style="margin-bottom: 5px; font-weight: bold; color: #ff4d4d;">อสูรข้อมูลลวง</div>
+                <div style="background:#333; height:20px; width:100%; border-radius:10px; overflow:hidden; border: 2px solid #555;">
+                    <div id="hp-boss" style="background: linear-gradient(90deg, #ff416c, #ff4b2b); height:100%; width:100%; transition: width 0.3s;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- กล่องคำถาม (Glassmorphism & Distractors) -->
+        <div class="glass-panel" style="position:absolute; bottom: 30px; left: 50%; transform: translateX(-50%); width: 85%; height: auto;">
+            <p style="color:#ff4d4d; font-weight:bold; font-size: 1.3em; margin-top:0;">บอสกล่าวว่า: <span id="boss-text" style="color:white; font-weight: normal;"></span></p>
+            <div id="choices-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top:15px;">
+                <!-- JavaScript จะสร้างปุ่มขึ้นมาตรงนี้ -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. FEEDBACK MODAL (Immediate Feedback & Low Stakes) -->
+    <div id="modal-feedback" class="hidden" style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:999; display:flex; justify-content:center; align-items:center;">
+        <div class="glass-panel" style="text-align:center; max-width: 650px;">
+            <h2 id="feedback-title" style="color:#ff4d4d; font-size: 2em; margin-top: 0;">❌ ตรรกะผิดพลาด!</h2>
+            <p id="feedback-desc" style="font-size:1.4em; line-height: 1.6;"></p>
+            <hr style="border-color: rgba(0,210,255,0.3); margin: 20px 0;">
+            <p style="color:#00d2ff; font-weight:bold;">*ไม่เป็นไร! พลังชีวิตคุณลดลงเพียงครึ่งเดียว เรียนรู้แล้วสู้ต่อไป!</p>
+            <button class="btn-glow primary" onclick="closeFeedback()">ทบทวนและสู้ต่อ</button>
+        </div>
+    </div>
+
+    <!-- 5. HALL OF FAME (Gamification & Social Proof) -->
+    <div id="screen-hof" class="screen hidden">
+        <div class="glass-panel" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width: 700px; max-height:80%; overflow-y:auto; text-align:center;">
+            <h2 style="color:#ffd700; font-size: 2.5em; text-shadow: 0 0 10px rgba(255,215,0,0.5);">🏆 หอเกียรติยศนักคณิตศาสตร์ 🏆</h2>
+            <p style="color: #ccc;">(TOP 10 Ranking)</p>
+            <div id="hof-list" style="text-align:left; margin-top:30px; font-size: 1.3em; padding: 0 50px;"></div>
+            <br>
+            <button class="btn-glow secondary" onclick="goHome()">กลับเมนูหลัก</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // ฐานข้อมูลคำถาม (ชุดโจทย์อัตราส่วนและร้อยละ ป.6 พร้อมเทคนิค Distractors)
+    const questions = [
+        { 
+            boss: "อัตราส่วน 15:25 ทอนเป็นเศษส่วนอย่างต่ำก็คือ 1:2 แหละ ฉันคำนวณมาแล้ว!", 
+            info: "ผิดหลักการ! ต้องนำ ห.ร.ม. (คือ 5) มาหารทั้งเศษและส่วน จะได้ 3:5 ต่างหาก", 
+            options: [
+                {t:"เชื่อบอส! ตอบ 1:2 แน่นอน", c:false}, 
+                {t:"ผิด! ต้องนำ 5 มาหาร จะได้ 3:5", c:true}, 
+                {t:"ผิด! อัตราส่วนนี้ทอนไม่ได้แล้ว", c:false}, 
+                {t:"ผิด! ต้องตอบ 5:3 ถึงจะถูก", c:false}
+            ] 
+        },
+        { 
+            boss: "เสื้อราคา 500 บาท ลดราคา 20% ก็แปลว่าลดไป 20 บาทไง จ่ายแค่ 480 บาท!", 
+            info: "ผิดเต็มๆ! คำว่า 20% คือ (20/100) ต้องเอาไปคูณ 500 จะได้ส่วนลด 100 บาท สรุปต้องจ่าย 400 บาท", 
+            options: [
+                {t:"ใช่เลย ลด 20 บาท จ่าย 480", c:false}, 
+                {t:"ผิด! ต้องลด 50 บาท จ่าย 450", c:false}, 
+                {t:"ผิด! ลด 20% คือลด 100 บาท จ่าย 400", c:true}, 
+                {t:"ผิด! จ่ายแค่ 20 บาท", c:false}
+            ] 
+        },
+        { 
+            boss: "อัตราส่วน 2:3 กับ 4:6 มันไม่เท่ากันหรอก เลขคนละตัวชัดๆ!", 
+            info: "พลาดแล้ว! 2:3 เมื่อนำ 2 ไปคูณทั้งเศษและส่วนจะได้ 4:6 แปลว่ามันคืออัตราส่วนที่เท่ากัน (Equivalent Ratios)", 
+            options: [
+                {t:"ใช่ มันไม่เท่ากัน เลขคนละตัว", c:false}, 
+                {t:"เท่ากัน เพราะคูณ 2 ทั้งสองฝั่ง", c:true}, 
+                {t:"ไม่เท่ากัน เพราะ 4 มากกว่า 2", c:false}, 
+                {t:"เท่ากัน เพราะเอามาบวก 2 เพิ่ม", c:false}
+            ] 
+        },
+        { 
+            boss: "มีไข่ไก่ 30 ฟอง ทำแตกไป 10% แสดงว่าแตกไป 10 ฟอง!", 
+            info: "มั่วมาก! 10% ของ 30 คือ (10/100) x 30 = 3 ฟองต่างหาก", 
+            options: [
+                {t:"ถูกต้อง แตกไป 10 ฟอง", c:false}, 
+                {t:"ผิด! แตกไป 13 ฟอง", c:false}, 
+                {t:"ผิด! แตกไปแค่ 3 ฟอง", c:true}, 
+                {t:"ผิด! แตกไป 20 ฟอง", c:false}
+            ] 
+        },
+        { 
+            boss: "แบ่งขนม 20 ชิ้น ให้ A และ B ในอัตราส่วน 2:3 A ต้องได้ 10 ชิ้นแน่นอน ฉันแบ่งแฟร์ๆ", 
+            info: "ไม่ยุติธรรม! แบ่งเป็น 5 ส่วน (2+3=5) จะได้ส่วนละ 4 ชิ้น A ได้ 2 ส่วน จึงต้องได้ 8 ชิ้น (2x4)", 
+            options: [
+                {t:"แฟร์ดีนะ A ได้ 10 ชิ้น", c:false}, 
+                {t:"ผิด! A ต้องได้ 8 ชิ้นต่างหาก", c:true}, 
+                {t:"ผิด! A ต้องได้ 12 ชิ้น", c:false}, 
+                {t:"ผิด! A ต้องได้ 15 ชิ้น", c:false}
+            ] 
+        },
+        { 
+            boss: "ซื้อของมา 200 บาท ขายไป 250 บาท ได้กำไรตั้ง 50% รวยเละ!", 
+            info: "คิดเลขผิด! กำไร 50 บาท จากทุน 200 บาท คิดเป็น (50/200) x 100 = 25% เท่านั้น", 
+            options: [
+                {t:"ใช่เลย กำไร 50% รวยๆ", c:false}, 
+                {t:"ผิด! กำไร 20% ต่างหาก", c:false}, 
+                {t:"ผิด! กำไรแค่ 25% นะจ๊ะ", c:true}, 
+                {t:"ผิด! แบบนี้ขาดทุนต่างหาก", c:false}
+            ] 
+        },
+        { 
+            boss: "ห้องเรียนมีนักเรียนชาย 15 คน หญิง 20 คน อัตราส่วนชายต่อหญิงคือ 4:3", 
+            info: "สลับที่กันแล้ว! ชาย 15 หญิง 20 ทอนด้วย 5 จะได้ 3:4 ต้องดูลำดับคำถามให้ดี (ชาย:หญิง)", 
+            options: [
+                {t:"ใช่ 4:3 ถูกต้องตามหลักเป๊ะ", c:false}, 
+                {t:"ผิด! ต้องเป็น 3:4 เพราะชายขึ้นก่อน", c:true}, 
+                {t:"ผิด! ต้องเป็น 1:2", c:false}, 
+                {t:"ผิด! ต้องเป็น 3:5", c:false}
+            ] 
+        },
+        { 
+            boss: "ฝากเงิน 1,000 บาท ได้ดอกเบี้ย 5% ต่อปี สิ้นปีจะได้เงินรวม 1,500 บาท!", 
+            info: "เวอร์ไป! ดอกเบี้ย 5% ของ 1000 คือ 50 บาท สิ้นปีต้องรวมเงินต้นเป็น 1,050 บาท", 
+            options: [
+                {t:"ใช่ ได้ตั้ง 1,500 บาท", c:false}, 
+                {t:"ผิด! ได้ดอกเบี้ย 50 บาท รวม 1,050 บาท", c:true}, 
+                {t:"ผิด! ได้ดอกเบี้ย 500 บาท", c:false}, 
+                {t:"ผิด! ได้ดอกเบี้ยแค่ 5 บาท", c:false}
+            ] 
+        },
+        { 
+            boss: "ร้อยละ 50 ของ 200 กับ ร้อยละ 200 ของ 50 มันมีค่าไม่เท่ากันหรอกเลขมันสลับกัน!", 
+            info: "โดนหลอกแล้ว! ทั้งคู่มีค่าเท่ากับ 100 เท่ากันเป๊ะ (มันคือสมบัติการสลับที่การคูณ a x b = b x a)", 
+            options: [
+                {t:"ใช่ ค่ามันไม่เท่ากันหรอก", c:false}, 
+                {t:"ผิด! มีค่าเท่ากับ 100 เท่ากัน", c:true}, 
+                {t:"ผิด! มีค่าเท่ากับ 250 เท่ากัน", c:false}, 
+                {t:"ผิด! มีค่าเท่ากับ 50 เท่ากัน", c:false}
+            ] 
+        },
+        { 
+            boss: "ทำข้อสอบคณิตศาสตร์ได้ 18 ข้อ จากทั้งหมด 20 ข้อ ก็คือสอบได้ 90% ยังไงล่ะ!", 
+            info: "ยอมแพ้! (18/20) x 100 = 90% ถูกต้องเป๊ะ บอสพูดความจริงบ้างก็ได้!", 
+            options: [
+                {t:"ผิด! ได้แค่ 80% ต่างหาก", c:false}, 
+                {t:"ผิด! ได้ 95% แน่นอน", c:false}, 
+                {t:"จริงด้วย! ได้ 90% พอดีเป๊ะ (บอสไม่ได้โกหก)", c:true}, 
+                {t:"ผิด! ข้อสอบไม่ยุติธรรม", c:false}
+            ] 
+        }
+    ];
+
+    // State Variables
+    let currentStage = 0;
+    let hp = 100;
+    let bossHp = 100;
+    let combo = 0;
+    let score = 0;
+    let playerName = "";
+    
+    // ลูกเล่น: สุ่มลำดับคำถาม
+    let randomizedQuestions = [];
+
+    // Navigation
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
+    }
+    function showLogin() { showScreen('screen-login'); }
+    function showHOF() { renderHOF(); showScreen('screen-hof'); }
+    function goHome() { showScreen('screen-menu'); }
+
+    // Start
+    function startGame() {
+        const nameInput = document.getElementById('playerName').value.trim();
+        if(!nameInput) { 
+            alert('กรุณากรอกชื่อก่อนเริ่มภารกิจ!'); 
+            return; 
+        }
+        playerName = nameInput;
+        document.getElementById('display-player-name').innerText = playerName;
+        
+        // Reset State
+        currentStage = 0; 
+        hp = 100; 
+        combo = 0; 
+        score = 0;
+        
+        // สุ่มคำถาม
+        randomizedQuestions = [...questions].sort(() => Math.random() - 0.5);
+        
+        updateStats();
+        loadStage();
+        showScreen('screen-game');
+    }
+
+    function loadStage() {
+        if(currentStage >= randomizedQuestions.length) { 
+            gameWin(); 
+            return; 
+        }
+        
+        // บอสจะมีเลือดเยอะขึ้นตามด่าน (Dynamic Difficulty)
+        bossHp = 100 + (currentStage * 20); 
+        const maxBossHp = bossHp;
+        
+        // อัปเดต UI 
+        document.getElementById('hp-boss').style.width = '100%';
+        updateStats();
+        
+        const q = randomizedQuestions[currentStage];
+        document.getElementById('boss-text').innerText = `${q.boss}`;
+        
+        // สุ่มตัวเลือก (Shuffle Options)
+        let opts = [...q.options].sort(() => Math.random() - 0.5);
+        const grid = document.getElementById('choices-grid');
+        grid.innerHTML = '';
+        opts.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'btn-choice';
+            btn.innerText = opt.t;
+            btn.onclick = () => checkAnswer(opt.c, q.info, maxBossHp);
+            grid.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(isCorrect, info, maxBossHp) {
+        const container = document.getElementById('game-container');
+        
+        if(isCorrect) {
+            // คำนวณดาเมจพื้นฐาน (บอสต้องโดนตีประมาณ 4-5 ครั้งตาย)
+            let baseDmg = maxBossHp / 4; 
+            
+            // ลูกเล่น: Critical Hit Gimmick (มีโอกาส 20% ที่จะโจมตีแรง 2 เท่า)
+            let isCrit = Math.random() < 0.2;
+            if(isCrit) { 
+                baseDmg *= 2; 
+                alert('💥 CRITICAL HIT! พลังโจมตี X2'); 
+            }
+            
+            bossHp -= baseDmg;
+            combo++;
+            score += 100 * combo; // โบนัสคอมโบ
+            
+            // เอฟเฟกต์ตีบอส
+            const bossEl = document.getElementById('boss');
+            bossEl.classList.add('shake-effect');
+            setTimeout(() => bossEl.classList.remove('shake-effect'), 400);
+
+            if(bossHp <= 0) {
+                bossHp = 0;
+                updateStats(maxBossHp);
+                setTimeout(() => {
+                    currentStage++;
+                    alert('🎉 ปราบอสูรสำเร็จ! ลุยด่านต่อไป');
+                    loadStage();
+                }, 500);
+            } else {
+                updateStats(maxBossHp);
+            }
+        } else {
+            // Low-stakes Assessment: ผิดแล้วโดนหักเลือด แต่เกมไม่จบง่ายๆ
+            combo = 0;
+            hp -= 20; 
+            
+            // เอฟเฟกต์จอหน้าสั่น
+            container.classList.add('shake-effect');
+            setTimeout(() => container.classList.remove('shake-effect'), 400);
+
+            document.getElementById('feedback-desc').innerText = info;
+            document.getElementById('modal-feedback').classList.remove('hidden');
+            
+            updateStats(maxBossHp);
+            
+            if(hp <= 0) { 
+                hp = 0;
+                updateStats(maxBossHp);
+                setTimeout(() => gameOver(), 500); 
+            }
+        }
+    }
+
+    function closeFeedback() {
+        document.getElementById('modal-feedback').classList.add('hidden');
+    }
+
+    function updateStats(maxBossHp = 100) {
+        document.getElementById('ui-stage').innerText = `${currentStage + 1}/${randomizedQuestions.length}`;
+        document.getElementById('ui-combo').innerText = combo;
+        
+        document.getElementById('hp-hero').style.width = Math.max(0, hp) + '%';
+        let bossHpPercent = (bossHp / maxBossHp) * 100;
+        document.getElementById('hp-boss').style.width = Math.max(0, bossHpPercent) + '%';
+        
+        // ลูกเล่น: ระบบฉายา (Progression)
+        let title = "นักคณิตฝึกหัด";
+        let color = "#ffd700";
+        if(combo >= 3) { title = "นักรบสมการ"; color = "#00ff00"; }
+        if(combo >= 6) { title = "ปรมาจารย์อัตราส่วน"; color = "#ff00ff"; }
+        if(combo >= 9) { title = "เทพเจ้าเปอร์เซ็นต์"; color = "#00ffff"; }
+        
+        const titleEl = document.getElementById('ui-title');
+        titleEl.innerText = title;
+        titleEl.style.color = color;
+    }
+
+    function gameWin() {
+        alert(`ภารกิจสำเร็จ! ${playerName} คุณคือสุดยอดนักคณิตศาสตร์
+คะแนนรวม: ${score}`);
+        saveScore();
+        goHome();
+    }
+
+    function gameOver() {
+        alert(`ภารกิจล้มเหลว... ${playerName} พลังชีวิตหมด
+คะแนนรวม: ${score}`);
+        saveScore();
+        goHome();
+    }
+
+    function saveScore() {
+        let hof = JSON.parse(localStorage.getItem('math_hof_p6')) || [];
+        hof.push({name: playerName, score: score});
+        // เรียงคะแนนมากไปน้อย (Data Sorting Logic)
+        hof.sort((a,b) => b.score - a.score);
+        // เก็บแค่ Top 10
+        localStorage.setItem('math_hof_p6', JSON.stringify(hof.slice(0,10)));
+    }
+
+    function renderHOF() {
+        let hof = JSON.parse(localStorage.getItem('math_hof_p6')) || [];
+        let html = '<table style="width:100%; border-collapse: collapse;">';
+        html += '<tr style="border-bottom: 1px solid #00d2ff; color:#00d2ff;"><th>อันดับ</th><th style="text-align:left;">ชื่อนักสืบ</th><th style="text-align:right;">คะแนน</th></tr>';
+        
+        hof.forEach((h, index) => {
+            let medal = "";
+            if(index === 0) medal = "🥇 ";
+            if(index === 1) medal = "🥈 ";
+            if(index === 2) medal = "🥉 ";
+            
+            html += `<tr style="line-height: 2;">
+                        <td>${index + 1}</td>
+                        <td style="text-align:left; color:#fff;">${medal}${h.name}</td>
+                        <td style="text-align:right; color:#ff9900;">${h.score}</td>
+                     </tr>`;
+        });
+        html += '</table>';
+        
+        if(hof.length === 0) html = "<p style='color:#ccc;'>ยังไม่มีผู้กล้าในหอเกียรติยศ<br>มาเป็นคนแรกสิ!</p>";
+        document.getElementById('hof-list').innerHTML = html;
+    }
+</script>
+
+</body>
+</html>
